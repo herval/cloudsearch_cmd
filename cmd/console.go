@@ -30,7 +30,7 @@ func main() {
 
 	switch mode {
 	case "accounts":
-		listOrRemove(config.AccountsStorage, op)
+		listOrRemove(config.AccountsStorage, op, flag.Arg(2))
 	case "login":
 		configure(op, config.Env, config.AccountsStorage, config.AuthBuilder, config.AuthService)
 	case "search":
@@ -64,20 +64,31 @@ func startOauthServer(
 	return done
 }
 
-func listOrRemove(storage cloudsearch.AccountsStorage, op string) {
+func listOrRemove(storage cloudsearch.AccountsStorage, op string, accountId string) {
 	switch op {
 	case "list":
-		fmt.Println("Configured accounts:")
 		accts, err := storage.All()
 		if err != nil {
 			panic(err)
 		}
+		if len(accts) == 0 {
+			fmt.Println("No accounts configured - use 'cloudsearch login <provider>' to register one!")
+			return
+		}
+		
+		fmt.Println("Configured accounts:")
 		for _, a := range accts {
-			fmt.Println(fmt.Sprintf("%s - %s", a.ID, a.Name))
+			fmt.Println(fmt.Sprintf("%s - %s (%s)", a.ID, a.Description, a.AccountType))
 		}
 	case "remove":
-		// TODO
-		os.Exit(1)
+		err := storage.Delete(accountId)
+		if err != nil {
+			fmt.Println("Could not remove account: ", err)
+			os.Exit(1)
+		}
+
+		fmt.Println("Account removed!")
+		os.Exit(0)
 	default:
 		fmt.Println("Please provide a valid operation. (list | remove).\nExample usage:\n> cloudsearch accounts list\n> cloudsearch accounts remove 123456")
 		os.Exit(1)

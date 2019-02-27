@@ -20,6 +20,21 @@ requests while adding an account. The default port is `65432`, but you can overr
 ### Search for content
 > cloudsearch search foo
 
+You can narrow down your results with cloudsearch's query macros:
+
+* `before:2006-02-01` - only get documents created or modified _before_ the given date
+* `after:2006-02-01` - only get documents created or modified _after_ the given date
+* `mode:live` - only search for documents on the cloud services directly, skipping local cache
+* `mode:cache` - only search for documents locally (pre-cached results)
+* `type:<document type>` - include only results of a given type. Options include Application, Calendar, Contact, Document, Email, Event, File, Folder, Image, Message, Post, Task, Video
+* `service:<Dropbox | Google>` - only get results from the given service
+
+An advanced search would look like this:
+
+> cloudsearch search foo before:2006-02-01 after: 2005-02-01 mode:cache type:Email type:Image service:Google
+ 
+ In this example, your search results would only include emails and images, saved in cache, from Google accounts, created between two given dates.
+
 ### Listing configured accounts
 > cloudsearch accounts list
 
@@ -37,4 +52,5 @@ requests while adding an account. The default port is `65432`, but you can overr
 - Cache queries to only hit downstream after 1 minute if they successfully returned
 - Fix empty query search on cache w/ type predicates
 - "Basic" account setup
+- Context around search result
 
