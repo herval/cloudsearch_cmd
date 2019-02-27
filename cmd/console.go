@@ -7,26 +7,24 @@ import (
 	"github.com/herval/cloudsearch"
 	"github.com/sirupsen/logrus"
 	"os"
+	"strings"
 )
 
 func main() {
 	storagePath := flag.String("storagePath", "./", "storage path") // TODO . folder?
 	oauthPort := flag.String("oauthPort", ":65432", "HTTP Port for Oauth2 callbacks")
 	debug := flag.Bool("debug", false, "Debug logging")
+	flag.Parse()
 
 	if *debug {
-		logrus.SetLevel(logrus.DebugLevel)
+		cloudsearch.LogLevel = logrus.DebugLevel
 	} else {
-		logrus.SetLevel(logrus.InfoLevel)
+		cloudsearch.LogLevel = logrus.InfoLevel
 	}
-
-	//account := flag.String("account", "", "configure a new account (Dropbox | Google)")
-	//op := flag.String("op", "", "additional params for specific operations")
-	flag.Parse()
+	logrus.SetLevel(cloudsearch.LogLevel)
 
 	mode := flag.Arg(0)
 	op := flag.Arg(1)
-	//mode := flag.String("mode", "", "run mode (setup | search | accounts | server)")
 
 	config := NewConfig(*storagePath, *oauthPort, true)
 
@@ -36,7 +34,7 @@ func main() {
 	case "login":
 		configure(op, config.Env, config.AccountsStorage, config.AuthBuilder, config.AuthService)
 	case "search":
-		searchAll(op, config.SearchEngine, config.Env)
+		searchAll(strings.Join(flag.Args()[1:], " "), config.SearchEngine, config.Env)
 	default:
 		flag.Usage()
 	}
@@ -94,7 +92,7 @@ func searchAll(cmd string, search *cloudsearch.SearchEngine, config cloudsearch.
 		select {
 		case q, ok := <-res:
 			if !ok {
-				logrus.Info("All done!")
+				logrus.Debug("All done!")
 				os.Exit(0)
 			}
 			logrus.Info("RESULT ->", q)

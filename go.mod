@@ -19,16 +19,20 @@ require (
 	github.com/herval/authgateway v0.0.0-20190226222858-8b1dde0706e7
 	github.com/herval/dropbox-sdk-go-unofficial v4.1.1+incompatible
 	github.com/joho/godotenv v1.3.0
+	github.com/konsorten/go-windows-terminal-sequences v1.0.2 // indirect
 	github.com/ncw/dropbox v0.0.0-20150425093714-daee057d5b32
 	github.com/nlopes/slack v0.5.0
 	github.com/philhofer/fwd v1.0.0 // indirect
 	github.com/pkg/errors v0.8.1
 	github.com/sirupsen/logrus v1.3.0
 	github.com/steveyen/gtreap v0.0.0-20150807155958-0abe01ef9be2 // indirect
+	github.com/stretchr/testify v1.3.0 // indirect
 	github.com/tinylib/msgp v1.1.0 // indirect
 	github.com/willf/bitset v1.1.10 // indirect
 	go.etcd.io/bbolt v1.3.2 // indirect
+	golang.org/x/crypto v0.0.0-20190225124518-7f87c0fbb88b // indirect
 	golang.org/x/oauth2 v0.0.0-20190226205417-e64efc72b421
+	golang.org/x/sys v0.0.0-20190226215855-775f8194d0f9 // indirect
 	google.golang.org/api v0.1.0
 	gopkg.in/olahol/melody.v1 v1.0.0-20170518105555-d52139073376
 )
