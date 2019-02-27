@@ -1,0 +1,6 @@
+*.db
+tmp/
+.DS_Store
+.idea/
+cloudsearch
+index.bleve/
