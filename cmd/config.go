@@ -6,7 +6,6 @@ import (
 	"github.com/herval/cloudsearch/search/authenticator"
 	"github.com/herval/cloudsearch/storage/bleve"
 	"github.com/herval/cloudsearch/storage/storm"
-	"github.com/sirupsen/logrus"
 	"net/http"
 	"time"
 )
@@ -28,7 +27,7 @@ func NewConfig(storagePath string, httpPort string, enableCaching bool) Config {
 	}
 
 	// TODO setup logging
-	logrus.SetLevel(logrus.DebugLevel)
+	//logrus.SetLevel(logrus.DebugLevel)
 
 	accounts, err := storm.NewAccountsStorage(storagePath)
 	if err != nil {
@@ -55,7 +54,7 @@ func NewConfig(storagePath string, httpPort string, enableCaching bool) Config {
 	auth := NewAuthBuilder(
 		authService,
 		accounts,
-		OauthRedirectUrlFor(env, cloudsearch.Google),
+		cloudsearch.OauthRedirectUrlFor(env, cloudsearch.Google),
 	)
 
 	searchBuilder := NewRemoteSearchablesBuilder(auth)
@@ -72,7 +71,7 @@ func NewConfig(storagePath string, httpPort string, enableCaching bool) Config {
 		func(q cloudsearch.Query) []cloudsearch.ResultFilter {
 			return []cloudsearch.ResultFilter{
 				cloudsearch.FilterNotInRange,
-				cloudsearch.Dedup,
+				cloudsearch.Dedup(q),
 				cloudsearch.FilterContent,
 			}
 		},

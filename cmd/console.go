@@ -5,6 +5,7 @@ import (
 	"flag"
 	"fmt"
 	"github.com/herval/cloudsearch"
+	"github.com/herval/cloudsearch/gocui"
 	"github.com/sirupsen/logrus"
 	"os"
 	"strings"
@@ -13,7 +14,10 @@ import (
 func main() {
 	storagePath := flag.String("storagePath", "./", "storage path") // TODO . folder?
 	oauthPort := flag.String("oauthPort", ":65432", "HTTP Port for Oauth2 callbacks")
+	format := flag.String("format", "plain", "Output format for results (plain, json)")
 	debug := flag.Bool("debug", false, "Debug logging")
+	log := flag.Bool("log", false, "Output logging to a file")
+
 	flag.Parse()
 
 	if *debug {
@@ -23,21 +27,44 @@ func main() {
 	}
 	logrus.SetLevel(cloudsearch.LogLevel)
 
-	mode := flag.Arg(0)
-	op := flag.Arg(1)
+	if *log {
+		f, err := os.OpenFile("cloudsearch.log", os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0755)
+		if err != nil {
+			panic("Could not setup log file")
+		}
+		logrus.SetOutput(f)
+		logrus.Info("Starting application...")
+	}
 
 	config := NewConfig(*storagePath, *oauthPort, true)
 
+	mode := flag.Arg(0)
 	switch mode {
 	case "accounts":
-		listOrRemove(config.AccountsStorage, op, flag.Arg(2))
+		op := flag.Arg(1)
+		acc := flag.Arg(2)
+		listOrRemove(config.AccountsStorage, op, acc, *format)
 	case "login":
-		configure(op, config.Env, config.AccountsStorage, config.AuthBuilder, config.AuthService)
+		accType := flag.Arg(1)
+		configure(accType, config.Env, config.AccountsStorage, config.AuthBuilder, config.AuthService)
 	case "search":
-		searchAll(strings.Join(flag.Args()[1:], " "), config.SearchEngine, config.Env)
+		searchString := strings.Join(flag.Args()[1:], " ")
+		searchAll(searchString, config.SearchEngine, config.Env)
 	default:
-		flag.Usage()
+		if len(flag.Args()) == 0 {
+			err := interactiveMode(config.SearchEngine)
+			if err != nil {
+				fmt.Println(err.Error())
+				os.Exit(1)
+			}
+		} else {
+			flag.Usage()
+		}
 	}
+}
+
+func interactiveMode(engine *cloudsearch.SearchEngine) error {
+	return gocui.StartSearchApp(engine)
 }
 
 func startOauthServer(
@@ -45,10 +72,10 @@ func startOauthServer(
 	accounts cloudsearch.AccountsStorage,
 	auth cloudsearch.AuthBuilder,
 	authService cloudsearch.OAuth2Authenticator,
-) (<-chan bool) {
-	done := make(chan bool)
+) (<-chan error) {
+	done := make(chan error)
 
-	a := &api{
+	a := &cloudsearch.Api{
 		env,
 		accounts,
 		auth,
@@ -57,14 +84,14 @@ func startOauthServer(
 	go func() {
 		if err := a.Start(env.HttpPort, done); err != nil {
 			logrus.Fatal("Could not start server", err)
-			done <- true
+			done <- err
 		}
 	}()
 
 	return done
 }
 
-func listOrRemove(storage cloudsearch.AccountsStorage, op string, accountId string) {
+func listOrRemove(storage cloudsearch.AccountsStorage, op string, accountId string, format string) {
 	switch op {
 	case "list":
 		accts, err := storage.All()
@@ -75,10 +102,20 @@ func listOrRemove(storage cloudsearch.AccountsStorage, op string, accountId stri
 			fmt.Println("No accounts configured - use 'cloudsearch login <provider>' to register one!")
 			return
 		}
-		
-		fmt.Println("Configured accounts:")
-		for _, a := range accts {
-			fmt.Println(fmt.Sprintf("%s - %s (%s)", a.ID, a.Description, a.AccountType))
+
+		switch format {
+		case "plain":
+			fmt.Println("Configured accounts:")
+			for _, a := range accts {
+				fmt.Println(fmt.Sprintf("%s - %s (%s)", a.ID, a.Description, a.AccountType))
+			}
+		case "json":
+			//res := []string{}
+			for _, a := range accts {
+				// TODO format
+				a.JsonFields()
+				fmt.Println(fmt.Sprintf("%s - %s (%s)", a.ID, a.Description, a.AccountType))
+			}
 		}
 	case "remove":
 		err := storage.Delete(accountId)
@@ -106,7 +143,7 @@ func searchAll(cmd string, search *cloudsearch.SearchEngine, config cloudsearch.
 				logrus.Debug("All done!")
 				os.Exit(0)
 			}
-			logrus.Info("RESULT ->", q)
+			logrus.Info("RESULT ->", q.Title)
 		}
 	}
 }
@@ -129,7 +166,11 @@ func configure(
 	url := fmt.Sprintf("%s%s/oauth/start/%s", env.ServerBase, env.HttpPort, accType)
 	fmt.Println("To start the login flow for your account, go to this link:\n\n    " + url + "\n")
 
-	<-done
+	err := <-done
+	if err != nil {
+		fmt.Println("\nAuthentication failed: ", err.Error())
+		os.Exit(1)
+	}
 
 	fmt.Println("\nAuthentication done!")
 }

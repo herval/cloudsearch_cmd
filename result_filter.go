@@ -2,21 +2,32 @@ package cloudsearch
 
 import (
 	"github.com/sirupsen/logrus"
+	"sync"
 	"time"
 )
 
 type ResultFilter func(Query, Result) *Result
 
-func Dedup(query Query, in Result) *Result {
-	//logrus.Debug("Filtering dups for ", query)
-	alreadyPosted := map[string]interface{}{}
+func Dedup(query Query) func(query Query, in Result) *Result {
+	logrus.Debug("Filtering dups for ", query)
+	lock := sync.RWMutex{}
+	alreadyPosted := map[string]bool{}
 
-	//logrus.Info(r)
-	if alreadyPosted[in.Id] == nil {
-		return &in
-	} else {
-		logrus.Debug("Already posted, filtering:", in.Id)
-		return nil
+	return func(query Query, in Result) *Result {
+		lock.RLock()
+		posted := alreadyPosted[in.Id] == true
+		lock.RUnlock()
+
+		if posted {
+			return &in
+		} else {
+			lock.Lock()
+			alreadyPosted[in.Id] = true
+			lock.Unlock()
+
+			logrus.Debug("Already posted, filtering:", in.Id)
+			return nil
+		}
 	}
 }
 

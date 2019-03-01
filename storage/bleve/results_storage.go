@@ -36,7 +36,7 @@ type searchableResult struct {
 }
 
 func NewBleveResultStorage(index bl.Index) cloudsearch.ResultsStorage {
-	logrus.SetLevel(cloudsearch.LogLevel)
+	//logrus.SetLevel(cloudsearch.LogLevel)
 	docs, err := index.DocCount()
 	if err == nil {
 		logrus.Debug("Opening index w/ docs: ", docs)

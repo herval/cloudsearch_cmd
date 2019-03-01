@@ -87,7 +87,7 @@ func (a *Gmail) SearchSnippets(query cloudsearch.Query, ctx context.Context) <-c
 		defer close(out)
 		_, err := a.search(ctx, q, "", out)
 		if err != nil {
-			logrus.Error("Couldn't list:", err)
+			//logrus.Error("Couldn't list:", err)
 			return
 		}
 	}()

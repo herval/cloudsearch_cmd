@@ -1,6 +1,7 @@
 module github.com/herval/cloudsearch
 
 require (
+	github.com/GeertJohan/go.rice v1.0.0
 	github.com/RoaringBitmap/roaring v0.4.16 // indirect
 	github.com/Smerity/govarint v0.0.0-20150407073650-7265e41f48f1 // indirect
 	github.com/araddon/dateparse v0.0.0-20190223010137-262228af701e
@@ -19,12 +20,16 @@ require (
 	github.com/herval/authgateway v0.0.0-20190226222858-8b1dde0706e7
 	github.com/herval/dropbox-sdk-go-unofficial v4.1.1+incompatible
 	github.com/joho/godotenv v1.3.0
+	github.com/jroimartin/gocui v0.4.0
 	github.com/konsorten/go-windows-terminal-sequences v1.0.2 // indirect
+	github.com/mattn/go-runewidth v0.0.4 // indirect
 	github.com/ncw/dropbox v0.0.0-20150425093714-daee057d5b32
 	github.com/nlopes/slack v0.5.0
+	github.com/nsf/termbox-go v0.0.0-20190121233118-02980233997d
 	github.com/philhofer/fwd v1.0.0 // indirect
 	github.com/pkg/errors v0.8.1
 	github.com/sirupsen/logrus v1.3.0
+	github.com/skratchdot/open-golang v0.0.0-20190104022628-a2dfa6d0dab6
 	github.com/steveyen/gtreap v0.0.0-20150807155958-0abe01ef9be2 // indirect
 	github.com/stretchr/testify v1.3.0 // indirect
 	github.com/tinylib/msgp v1.1.0 // indirect

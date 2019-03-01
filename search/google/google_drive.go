@@ -66,7 +66,7 @@ func (a *GoogleDrive) SearchSnippets(query cloudsearch.Query, ctx context.Contex
 		defer close(out)
 		r, _, err := a.search(ctx, q, "")
 		if err != nil {
-			logrus.Error("Couldn't list:", err)
+			//logrus.Error("Couldn't list:", err)
 			return
 		} else {
 			for _, f := range r.Files {

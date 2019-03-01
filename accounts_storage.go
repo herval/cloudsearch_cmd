@@ -34,3 +34,14 @@ func (a *AccountData) String() string {
 func (a *AccountData) ShouldReauth() bool {
 	return !a.Expiry.IsZero() && a.Expiry.Before(time.Now().Add(time.Minute*30))
 }
+
+func (a *AccountData) JsonFields() map[string]interface{} {
+	return map[string]interface{}{
+		"id":          a.ID,
+		"type":        a.AccountType,
+		"name":        a.Name,
+		"active":      a.Active,
+		"email":       a.Email,
+		"description": a.Description,
+	}
+}

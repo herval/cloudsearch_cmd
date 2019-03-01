@@ -4,3 +4,5 @@ tmp/
 .idea/
 cloudsearch
 index.bleve/
+rice-box.go
+cloudsearch.log

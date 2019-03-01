@@ -70,7 +70,9 @@ func (s *SearchEngine) Refresh() error {
 
 			acc, _, err = auth.RefreshAccountIfNeeded(acc)
 			if err != nil {
-				return errors.Wrap(err, "Could not refresh account")
+				logrus.Error("Could not search " + acc.Description + ": " + err.Error())
+				//return errors.Wrap(err, "Could not refresh account")
+				continue
 			}
 			// TODO mark failed as inactive?
 		}
@@ -97,7 +99,11 @@ func (s *SearchEngine) Search(query Query, ctx context.Context) <-chan Result {
 	var finished int32 = 0
 	done := make(chan bool, len(searchables))
 
-	logrus.Debug("Searching ", len(searchables), " datasources @ "+query.SearchId)
+	logrus.WithFields(map[string]interface{}{
+		"sources": len(searchables),
+		"queryId": query.SearchId,
+		"query":   query.RawText,
+	}).Info("Searching datasources")
 
 	withFilters := func(d SearchFunc) {
 		res := d(query, ctx)
