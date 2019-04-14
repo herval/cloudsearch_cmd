@@ -62,11 +62,11 @@ func NewConfig(env cloudsearch.Env, enableCaching bool) cloudsearch.Config {
 	go multiSearch.WatchTokens()
 
 	return cloudsearch.Config{
-		env,
-		accounts,
-		&multiSearch,
-		a,
-		results,
-		authService,
+		Env:             env,
+		AccountsStorage: accounts,
+		SearchEngine:    &multiSearch,
+		AuthBuilder:     a,
+		ResultsStorage:  results,
+		AuthService:     authService,
 	}
 }
