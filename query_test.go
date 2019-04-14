@@ -23,11 +23,11 @@ func TestParser(t *testing.T) {
 		t.Fatal(parsed)
 	}
 
-	if !reflect.DeepEqual(parsed.AccountTypes, []AccountType{Dropbox, Google}) {
+	if !reflect.DeepEqual(parsed.AccountTypes, []cloudsearch.AccountType{cloudsearch.Dropbox, cloudsearch.Google}) {
 		t.Fatal(parsed)
 	}
 
-	if !reflect.DeepEqual(parsed.ContentTypes, []ContentType{File}) {
+	if !reflect.DeepEqual(parsed.ContentTypes, []cloudsearch.ContentType{cloudsearch.File}) {
 		t.Fatal(parsed)
 	}
 
