@@ -77,6 +77,7 @@ func (s *searchable) toResults(contents []Content) []cloudsearch.Result {
 			"", // TODO ?
 			true,
 			[]string{},
+			e.IsDir,
 		)
 	}
 	return res

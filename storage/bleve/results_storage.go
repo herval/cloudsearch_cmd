@@ -181,7 +181,6 @@ func (s *BleveResultStorage) Merge(r cloudsearch.Result) (cloudsearch.Result, er
 		// TODO add other stuff here (eg scores)
 	}
 
-
 	return s.Save(r)
 }
 
@@ -200,8 +199,13 @@ func (s *BleveResultStorage) Save(result cloudsearch.Result) (cloudsearch.Result
 		return result, errors.New("Id must be MD5 encoded!")
 	}
 
-	if result.Timestamp.IsZero() && result.ContentType != cloudsearch.Contact {
-		logrus.Debug("TIMESTAMP IS NOT SET: ", result)
+	if result.Timestamp.IsZero() &&
+		result.ContentType != cloudsearch.Contact &&
+		result.ContentType != cloudsearch.Folder {
+		logrus.WithFields(logrus.Fields{
+			"result": result,
+			"type":   string(result.ContentType),
+		}).Debug("TIMESTAMP IS NOT SET: ")
 		//result.Timestamp = time.Now()
 	}
 	result.CachedAt = time.Now()

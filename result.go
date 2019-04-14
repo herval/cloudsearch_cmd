@@ -50,8 +50,9 @@ func FileOrFolderResult(
 	thumbnail string,
 	involvesMe bool,
 	labels []string,
+	isDir bool,
 ) Result {
-	klass := kindFor(mimeType, extension, path)
+	klass := kindFor(isDir, mimeType, extension, path)
 
 	switch klass {
 	case Image:

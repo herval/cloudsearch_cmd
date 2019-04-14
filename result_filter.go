@@ -18,13 +18,13 @@ func Dedup(query Query) func(query Query, in Result) *Result {
 		posted := alreadyPosted[in.Id] == true
 		lock.RUnlock()
 
-		if posted {
-			return &in
-		} else {
+		if !posted {
 			lock.Lock()
 			alreadyPosted[in.Id] = true
 			lock.Unlock()
 
+			return &in
+		} else {
 			logrus.Debug("Already posted, filtering:", in.Id)
 			return nil
 		}

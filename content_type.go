@@ -84,7 +84,10 @@ func ContainFileTypes(contentTypes []ContentType) bool {
 }
 
 // try mime, then extension, then the full path
-func kindFor(mimeType string, extension string, path string) ContentType {
+func kindFor(isDir bool, mimeType string, extension string, path string) ContentType {
+	if isDir {
+		return Folder
+	}
 	if mimeType != "" {
 		if strings.Contains(mimeType, "image") || strings.Contains(mimeType, "drawing") {
 			return Image

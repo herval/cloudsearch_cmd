@@ -149,5 +149,6 @@ func (a *GoogleDrive) ToResult(f *drive.File) cloudsearch.Result {
 		),
 		true, // TODO parse from query
 		[]string{},
+		false,
 	)
 }
