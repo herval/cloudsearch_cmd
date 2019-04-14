@@ -1,7 +1,6 @@
 package dropbox
 
 import (
-	"github.com/herval/cloudsearch/mock"
 	"context"
 	"fmt"
 	"os"
@@ -12,8 +11,6 @@ import (
 )
 
 func TestDropbox(t *testing.T) {
-	mock.TestEnv()
-
 	if os.Getenv("DROPBOX_TOKEN") == "" {
 		t.Log("Skipping dropbox test (no token set)")
 		t.Skipped()

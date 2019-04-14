@@ -1,17 +1,18 @@
-package cloudsearch
+package auth
 
 import (
 	"fmt"
 	"github.com/GeertJohan/go.rice"
 	"github.com/gin-gonic/gin"
+	"github.com/herval/cloudsearch"
 	"github.com/sirupsen/logrus"
 )
 
 type Api struct {
-	Env          Env
-	Accounts     AccountsStorage
-	Auth         AuthBuilder
-	OauthService OAuth2Authenticator
+	Env          cloudsearch.Env
+	Accounts     cloudsearch.AccountsStorage
+	Auth         cloudsearch.AuthBuilder
+	OauthService cloudsearch.OAuth2Authenticator
 }
 
 func (a *Api) Start(port string, done chan error) error {
@@ -27,7 +28,7 @@ func (a *Api) Start(port string, done chan error) error {
 }
 
 func (a *Api) oauthStart(ctx *gin.Context) {
-	service, err := ParseAccountType(ctx.Param("service"))
+	service, err := cloudsearch.ParseAccountType(ctx.Param("service"))
 	if err != nil {
 		renderError(ctx, err)
 		return
@@ -49,7 +50,7 @@ func (a *Api) oauthCallback(done chan error) func(ctx *gin.Context) {
 			done <- err
 		}()
 
-		service, err := ParseAccountType(ctx.Param("service"))
+		service, err := cloudsearch.ParseAccountType(ctx.Param("service"))
 		code := ctx.Query("code")
 		logrus.Debug("Oauth callback for ", service, " - ", code)
 
@@ -59,7 +60,7 @@ func (a *Api) oauthCallback(done chan error) func(ctx *gin.Context) {
 			return
 		}
 
-		aa := AccountType(service)
+		aa := cloudsearch.AccountType(service)
 		acc, err := a.OauthService.AccountFromCode(
 			aa,
 			code,
@@ -105,7 +106,7 @@ func renderError(context *gin.Context, err error) {
 	)
 }
 
-func OauthRedirectUrlFor(env Env, accountType AccountType) string {
+func OauthRedirectUrlFor(env cloudsearch.Env, accountType cloudsearch.AccountType) string {
 	return fmt.Sprintf("%s%s/oauth/callback/%s",
 		env.ServerBase,
 		env.HttpPort,

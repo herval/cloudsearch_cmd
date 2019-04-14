@@ -8,7 +8,7 @@ import (
 )
 
 func TestUncachedSearch(t *testing.T) {
-	conf := NewConfig("../", ":65432", false)
+	conf := NewConfig(cloudsearch.Env{"localhost", ":65432", "../"}, false)
 	search := conf.SearchEngine
 
 	t.Log("Searching...")

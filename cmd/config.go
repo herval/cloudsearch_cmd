@@ -3,6 +3,8 @@ package main
 import (
 	"github.com/herval/authgateway/client"
 	"github.com/herval/cloudsearch"
+	"github.com/herval/cloudsearch/auth"
+	"github.com/herval/cloudsearch/search"
 	"github.com/herval/cloudsearch/search/authenticator"
 	"github.com/herval/cloudsearch/storage/bleve"
 	"github.com/herval/cloudsearch/storage/storm"
@@ -10,36 +12,17 @@ import (
 	"time"
 )
 
-type Config struct {
-	Env              cloudsearch.Env
-	AccountsStorage  cloudsearch.AccountsStorage
-	SearchEngine     *cloudsearch.SearchEngine
-	AuthBuilder      cloudsearch.AuthBuilder
-	ResultsStorage   cloudsearch.ResultsStorage
-	AuthService      cloudsearch.OAuth2Authenticator
-}
-
-func NewConfig(storagePath string, httpPort string, enableCaching bool) Config {
-	env := cloudsearch.Env{
-		ServerBase:  "http://localhost",
-		StoragePath: storagePath,
-		HttpPort:    httpPort,
-	}
-
-	// TODO setup logging
-	//logrus.SetLevel(logrus.DebugLevel)
-
-	accounts, err := storm.NewAccountsStorage(storagePath)
+func NewConfig(env cloudsearch.Env, enableCaching bool) cloudsearch.Config {
+	accounts, err := storm.NewAccountsStorage(env.StoragePath)
 	if err != nil {
 		panic(err)
 	}
 
-	index, err := bleve.NewIndex(storagePath, "")
+	index, err := bleve.NewIndex(env.StoragePath, "")
 	if err != nil {
 		panic(err)
 	}
 	results := bleve.NewBleveResultStorage(index)
-
 
 	authService := authenticator.NewAuthenticator(
 		authgateway.NewAuthGatewayClient(
@@ -51,15 +34,15 @@ func NewConfig(storagePath string, httpPort string, enableCaching bool) Config {
 		),
 	)
 
-	auth := NewAuthBuilder(
+	a := auth.NewAuthBuilder(
 		authService,
 		accounts,
-		cloudsearch.OauthRedirectUrlFor(env, cloudsearch.Google),
+		auth.OauthRedirectUrlFor(env, cloudsearch.Google),
 	)
 
-	searchBuilder := NewRemoteSearchablesBuilder(auth)
+	searchBuilder := search.NewRemoteSearchablesBuilder(a)
 	if enableCaching {
-		searchBuilder = NewCachedSearchableBuilder(results, searchBuilder, enableCaching)
+		searchBuilder = search.NewCachedSearchableBuilder(results, searchBuilder, enableCaching)
 	}
 
 	multiSearch := cloudsearch.NewMultiSearch(
@@ -67,7 +50,7 @@ func NewConfig(storagePath string, httpPort string, enableCaching bool) Config {
 		accounts,
 		results,
 		searchBuilder,
-		auth,
+		a,
 		func(q cloudsearch.Query) []cloudsearch.ResultFilter {
 			return []cloudsearch.ResultFilter{
 				cloudsearch.FilterNotInRange,
@@ -79,11 +62,11 @@ func NewConfig(storagePath string, httpPort string, enableCaching bool) Config {
 
 	go multiSearch.WatchTokens()
 
-	return Config{
+	return cloudsearch.Config{
 		env,
 		accounts,
 		&multiSearch,
-		auth,
+		a,
 		results,
 		authService,
 	}

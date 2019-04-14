@@ -1,7 +1,6 @@
 package storm
 
 import (
-	"github.com/herval/cloudsearch/mock"
 	"testing"
 
 	"github.com/herval/cloudsearch"

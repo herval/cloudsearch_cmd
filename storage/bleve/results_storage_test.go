@@ -2,7 +2,6 @@ package bleve_test
 
 import (
 	"github.com/herval/cloudsearch"
-	"github.com/herval/cloudsearch/storage/mock"
 	"github.com/herval/cloudsearch/storage/bleve"
 	"testing"
 )
@@ -13,7 +12,7 @@ func searchable(t *testing.T) *bleve.BleveResultStorage {
 		t.Fatal(err)
 	}
 
-	s := bleve.NewBleveResultStorage(index, mock.NoopMetadataStorage{}).(*bleve.BleveResultStorage)
+	s := bleve.NewBleveResultStorage(index).(*bleve.BleveResultStorage)
 
 	err = s.Truncate()
 	//if err != nil {
@@ -31,42 +30,12 @@ func assertSave(r cloudsearch.Result, s cloudsearch.ResultsStorage, t *testing.T
 	return &r
 }
 
-func TestFavorite(t *testing.T) {
-	s := searchable(t)
-	defer s.Close()
-	r := assertSave(
-		cloudsearch.Result{
-			Favorited:   false,
-			ContentType: cloudsearch.Message,
-			OriginalId:  "3",
-		},
-		s, t,
-	)
-
-	if r, err := s.Get(r.Id); err != nil || r == nil || r.Favorited {
-		t.Fatal("Should find the unfavorited result ", err, r)
-	}
-
-	if fav, err := s.ToggleFavorite(r.Id); err != nil || !fav {
-		t.Fatal("should toggle favorite ", err, fav)
-	}
-
-	if fav, err := s.IsFavorite(r.Id); err != nil || !fav {
-		t.Fatal("should be faved ", err, fav)
-	}
-
-	if fav, err := s.AllFavorited(); err != nil || len(fav) != 1 || !fav[0].Favorited {
-		t.Fatal("should be faved ", err, fav)
-	}
-}
-
 func TestContentTypeQuery(t *testing.T) {
 	s := searchable(t)
 	defer s.Close()
 	assertSave(
 		cloudsearch.Result{
 			ContentType: cloudsearch.Image,
-			Favorited:   false,
 			OriginalId:  "1",
 		},
 		s, t,
@@ -75,7 +44,6 @@ func TestContentTypeQuery(t *testing.T) {
 	assertSave(
 		cloudsearch.Result{
 			ContentType: cloudsearch.Contact,
-			Favorited:   false,
 			OriginalId:  "2",
 		},
 		s, t,
