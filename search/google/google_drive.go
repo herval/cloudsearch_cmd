@@ -126,7 +126,7 @@ func (a *GoogleDrive) FormattedTime(t time.Time) string {
 	return t.Format(time.RFC3339)
 }
 
-func (a *GoogleDrive) toResult(f *drive.File) cloudsearch.Result {
+func (a *GoogleDrive) ToResult(f *drive.File) cloudsearch.Result {
 	return cloudsearch.FileOrFolderResult(
 		f.Id,
 		cloudsearch.Either(f.OriginalFilename, f.Name),

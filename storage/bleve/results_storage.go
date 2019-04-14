@@ -48,22 +48,25 @@ func NewBleveResultStorage(index bl.Index) cloudsearch.ResultsStorage {
 	}
 }
 
-func (f *BleveResultStorage) DeleteAllFromAccount(accountId string) error {
+func (f *BleveResultStorage) DeleteAllFromAccount(accountId string) ([]string, error) {
 	res, err := f.findIds(
 		match(accountId, "AccountId", 1.0),
 	)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
+	var ret []string
 	for r := range res {
 		err = f.index.Delete(r)
 		if err != nil {
 			logrus.Error("Deleting ", err)
+		} else {
+			ret = append(ret, r)
 		}
 	}
 
-	return nil
+	return ret, nil
 }
 
 func (f *BleveResultStorage) AllFavoritedIds() ([]string, error) {
@@ -148,7 +151,7 @@ func (s *BleveResultStorage) findIds(q query.Query) (<-chan string, error) {
 }
 
 func (s *BleveResultStorage) Close() {
-	_  = s.index.Close()
+	_ = s.index.Close()
 }
 
 func (s *BleveResultStorage) Get(resultId string) (*cloudsearch.Result, error) {
@@ -167,10 +170,17 @@ func (s *BleveResultStorage) Get(resultId string) (*cloudsearch.Result, error) {
 
 func (s *BleveResultStorage) Merge(r cloudsearch.Result) (cloudsearch.Result, error) {
 	r.SetId()
-	//existing, err := s.Get(r.Id)
-	//if err != nil {
-	//	logrus.Error("Couldn't get from cache:", err)
-	//}
+
+	existing, err := s.Get(r.Id)
+	if err != nil {
+		logrus.Error("Couldn't get from cache:", err)
+	}
+	if existing != nil {
+		// maintain status/avoid overriding existing preferences
+		r.Favorited = existing.Favorited
+		// TODO add other stuff here (eg scores)
+	}
+
 
 	return s.Save(r)
 }

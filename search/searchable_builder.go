@@ -60,17 +60,3 @@ func NewRemoteSearchablesBuilder(
 		}
 	}
 }
-
-func searchables(fn []cloudsearch.SyncSearchFunc, ids []string, err error) ([]cloudsearch.SearchFunc, []string, error) {
-	if err != nil {
-		return nil, nil, err
-	}
-
-	res := []cloudsearch.SearchFunc{}
-
-	for _, s := range fn {
-		res = append(res, cloudsearch.NewAsyncSearchable(s))
-	}
-
-	return res, ids, nil
-}

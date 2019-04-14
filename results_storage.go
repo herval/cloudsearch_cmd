@@ -10,7 +10,7 @@ type ResultsStorage interface {
 	Get(resultId string) (*Result, error)
 
 	FindOlderThan(maxTime time.Time) (<-chan Result, error)
-	DeleteAllFromAccount(accountId string) error
+	DeleteAllFromAccount(accountId string) ([]string, error)
 	Delete(resultId string) error
 
 	AllFavorited() ([]Result, error)

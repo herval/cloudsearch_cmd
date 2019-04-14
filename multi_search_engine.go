@@ -179,7 +179,7 @@ func (s *SearchEngine) AllAccounts() ([]AccountData, error) {
 }
 
 func (s *SearchEngine) DeleteAccount(id string) error {
-	err := s.results.DeleteAllFromAccount(id)
+	_, err := s.results.DeleteAllFromAccount(id)
 	if err != nil {
 		return err
 	}
