@@ -48,3 +48,9 @@ on items using up/down arrows. Pressing enter will open the selected document on
 
 ### Removing an account
 > cloudsearch accounts remove <account id>
+
+
+## TODO
+
+- Something, _somewhere_ is importing "testing", which polutes the flags namespace. Ugh.
+- Fix search w/ lowercase on titles (not working? eg email subject)
