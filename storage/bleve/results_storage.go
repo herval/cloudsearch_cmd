@@ -203,6 +203,52 @@ func (s *BleveResultStorage) Save(result cloudsearch.Result) (cloudsearch.Result
 	return result, s.index.Index(result.Id, searchable(result))
 }
 
+func (f *BleveResultStorage) IsFavorite(resultId string) (bool, error) {
+	res, err := f.Get(resultId)
+	if err != nil {
+		logrus.Error("Error finding fave: ", err)
+		return false, errors.Wrap(err, "finding favorite")
+	}
+
+	return res != nil && res.Favorited, nil
+}
+
+func (f *BleveResultStorage) ToggleFavorite(resultId string) (bool, error) {
+	res, err := f.Get(resultId)
+	if err != nil {
+		return false, err
+	}
+
+	if res == nil {
+		logrus.Debug("Trying to toggle result not found: ", resultId)
+		return false, nil
+	}
+
+	res.Favorited = !res.Favorited
+	_, err = f.Save(*res)
+
+	return res.Favorited, err
+}
+
+func (f *BleveResultStorage) AllFavorited() ([]cloudsearch.Result, error) {
+	ids, err := f.AllFavoritedIds()
+	if err != nil {
+		return nil, err
+	}
+
+	res := []cloudsearch.Result{}
+	for _, d := range ids {
+		r, err := f.Get(d)
+		if err != nil {
+			logrus.Error("getting ", d, ": ", err)
+			continue
+		}
+		res = append(res, *r)
+	}
+
+	return res, nil
+}
+
 func searchable(result cloudsearch.Result) searchableResult {
 	d, _ := json.Marshal(result)
 	return searchableResult{

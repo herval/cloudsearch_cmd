@@ -1,4 +1,4 @@
-package authenticator
+package auth
 
 import (
 	authgateway2 "github.com/herval/authgateway"
@@ -9,6 +9,7 @@ import (
 )
 
 const DefaultGatewayUrl = "https://cloudsearch-auth.herokuapp.com"
+const LocalGatewayUrl = "http://localhost:8080"
 
 type AuthgatewayAuthenticator struct {
 	client authgateway.AuthClient

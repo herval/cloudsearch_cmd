@@ -32,7 +32,7 @@ func NewGoogleDrive(
 	}, err
 }
 
-func (a *GoogleDrive) search(ctx context.Context, q string, pageToken string) (*drive.FileList, string, error) {
+func (a *GoogleDrive) Search(ctx context.Context, q string, pageToken string) (*drive.FileList, string, error) {
 	//logrus.Debug("gdrive: ", q, " - token: ", pageToken)
 	r, err := a.driveApi.Files.
 		List().
@@ -64,7 +64,7 @@ func (a *GoogleDrive) SearchSnippets(query cloudsearch.Query, ctx context.Contex
 
 	go func() {
 		defer close(out)
-		r, _, err := a.search(ctx, q, "")
+		r, _, err := a.Search(ctx, q, "")
 		if err != nil {
 			//logrus.Error("Couldn't list:", err)
 			return
@@ -88,10 +88,10 @@ func (a *GoogleDrive) buildQuery(query cloudsearch.Query) string {
 	// modifiedTime modifiedTime > '2012-06-04T12:00:00'
 	// owners writers readers in
 	if query.After != nil {
-		q += fmt.Sprintf(" and modifiedTime > '%s'", a.formattedTime(*query.After))
+		q += fmt.Sprintf(" and modifiedTime > '%s'", a.FormattedTime(*query.After))
 	}
 	if query.Before != nil {
-		q += fmt.Sprintf(" and modifiedTime < '%s'", a.formattedTime(*query.Before))
+		q += fmt.Sprintf(" and modifiedTime < '%s'", a.FormattedTime(*query.Before))
 	}
 
 	if query.ContentTypes != nil {
@@ -121,7 +121,7 @@ func (a *GoogleDrive) buildQuery(query cloudsearch.Query) string {
 	return q
 }
 
-func (a *GoogleDrive) formattedTime(t time.Time) string {
+func (a *GoogleDrive) FormattedTime(t time.Time) string {
 	//2012-06-04T12:00:00
 	return t.Format(time.RFC3339)
 }

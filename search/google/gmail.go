@@ -20,7 +20,7 @@ type Gmail struct {
 	account      cloudsearch.AccountData
 }
 
-var gmailTimeFormat = "2006/01/02"
+var GmailTimeFormat = "2006/01/02"
 
 func NewGmail(
 	account cloudsearch.AccountData,
@@ -35,7 +35,7 @@ func NewGmail(
 	}, err
 }
 
-func (a *Gmail) search(ctx context.Context, q string, pageToken string, out chan<- cloudsearch.Result) (string, error) {
+func (a *Gmail) Search(ctx context.Context, q string, pageToken string, out chan<- cloudsearch.Result) (string, error) {
 	//logrus.Debug("gmail: ", q, " - token: ", pageToken)
 	r, err := a.api.Users.Messages.
 		List(a.account.Email).
@@ -85,7 +85,7 @@ func (a *Gmail) SearchSnippets(query cloudsearch.Query, ctx context.Context) <-c
 
 	go func() {
 		defer close(out)
-		_, err := a.search(ctx, q, "", out)
+		_, err := a.Search(ctx, q, "", out)
 		if err != nil {
 			//logrus.Error("Couldn't list:", err)
 			return
@@ -101,10 +101,10 @@ func (a *Gmail) buildQuery(query cloudsearch.Query) string {
 	// modifiedTime modifiedTime > '2012-06-04T12:00:00'
 	// owners writers readers in
 	if query.After != nil {
-		q += fmt.Sprintf(" and after > '%s'", a.formattedTime(*query.After))
+		q += fmt.Sprintf(" and after > '%s'", a.FormattedTime(*query.After))
 	}
 	if query.Before != nil {
-		q += fmt.Sprintf(" and before < '%s'", a.formattedTime(*query.Before))
+		q += fmt.Sprintf(" and before < '%s'", a.FormattedTime(*query.Before))
 	}
 
 	// TODO has:attachment
@@ -114,8 +114,8 @@ func (a *Gmail) buildQuery(query cloudsearch.Query) string {
 	return q
 }
 
-func (a *Gmail) formattedTime(t time.Time) string {
-	return t.Format(gmailTimeFormat)
+func (a *Gmail) FormattedTime(t time.Time) string {
+	return t.Format(GmailTimeFormat)
 }
 
 func (a *Gmail) toResult(f *gmail.Message) cloudsearch.Result {

@@ -32,6 +32,7 @@ type Result struct {
 	Status        ResultStatus
 	Unread        bool
 	CacheHitScore float64 `json:"-"` // a transient hit score of the result, based on relevance on cache _only_
+	Favorited     bool               // this flag is saved on a different table, so it's most likely always "false" on the results storage
 	// TODO involved
 }
 
