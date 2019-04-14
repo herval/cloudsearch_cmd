@@ -2,9 +2,6 @@ package cloudsearch
 
 import (
 	"fmt"
-	"github.com/sirupsen/logrus"
-	"regexp"
-	"strings"
 	"time"
 )
 
@@ -36,23 +33,6 @@ type Result struct {
 	Unread        bool
 	CacheHitScore float64 `json:"-"` // a transient hit score of the result, based on relevance on cache _only_
 	// TODO involved
-}
-
-func formatAndHighlight(s string, q Query) string {
-	if len(q.Text) == 0 {
-		return s
-	}
-
-	terms := strings.Split(q.Text, " ")
-	for _, t := range terms {
-		r, err := regexp.Compile(`(?i)` + t)
-		if err != nil {
-			logrus.Error("Could not compile: ", t)
-		} else {
-			s = r.ReplaceAllString(s, fmt.Sprintf("<b>%s</b>", t))
-		}
-	}
-	return s
 }
 
 func FileOrFolderResult(

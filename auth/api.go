@@ -2,9 +2,9 @@ package auth
 
 import (
 	"fmt"
-	"github.com/GeertJohan/go.rice"
 	"github.com/gin-gonic/gin"
 	"github.com/herval/cloudsearch"
+	"github.com/herval/cloudsearch/assets"
 	"github.com/sirupsen/logrus"
 )
 
@@ -86,13 +86,13 @@ func (a *Api) oauthCallback(done chan error) func(ctx *gin.Context) {
 		logrus.Debug("Account saved: ", acc)
 		//	TODO render html?
 
-		page, err := rice.FindBox("static")
+		data, err := assets.Static("account_linked.html")
 		if err != nil {
 			logrus.Debug("Data missing: ", err)
 			ctx.Status(500)
 		}
 
-		ctx.Data(200, "text/html", page.MustBytes("account_linked.html"))
+		ctx.Data(200, "text/html", data)
 	}
 }
 
