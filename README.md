@@ -1,4 +1,4 @@
-# A tiny realtime search tool for cloud accounts
+# CloudSearch: a tiny realtime search tool for cloud accounts
 
 `cloudsearch` allows you to index and search content on cloud services such as Google services 
 (Gmail, Google Drive, etc) and Dropbox, directly from a command line.
@@ -48,15 +48,3 @@ on items using up/down arrows. Pressing enter will open the selected document on
 
 ### Removing an account
 > cloudsearch accounts remove <account id>
-
-
-# TO DO
-- Fix result order (newer should be first?)
-- Fix search w/ lowercase on titles (not working? eg email subject)
-- Network listener
-- Thumbnails
-- Cache queries to only hit downstream after 1 minute if they successfully returned
-- Fix empty query search on cache w/ type predicates
-- "Basic" account setup
-- Context around search result
-
