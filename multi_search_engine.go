@@ -129,7 +129,7 @@ func (s *SearchEngine) Search(query Query, ctx context.Context) <-chan Result {
 				}
 			}
 
-			if !skip {
+			if !skip && ctx.Err() != nil {
 				results <- *c
 			}
 		}
