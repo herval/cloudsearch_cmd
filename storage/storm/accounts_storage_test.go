@@ -1,6 +1,7 @@
-package storm
+package storm_test
 
 import (
+	"github.com/herval/cloudsearch/storage/storm"
 	"testing"
 
 	"github.com/herval/cloudsearch"
@@ -10,7 +11,7 @@ func TestStorage(t *testing.T) {
 	env := cloudsearch.Env{
 		StoragePath: "./../tmp",
 	}
-	storage, err := NewAccountsStorage(env.StoragePath)
+	storage, err := storm.NewAccountsStorage(env.StoragePath)
 	if err != nil {
 		t.Fail()
 	}

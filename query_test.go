@@ -1,6 +1,7 @@
-package cloudsearch
+package cloudsearch_test
 
 import (
+	"github.com/herval/cloudsearch"
 	"reflect"
 	"testing"
 	"time"
@@ -9,7 +10,7 @@ import (
 func TestParser(t *testing.T) {
 	q := "type:File foo bar service:dropbox before:2017-01-1 service:invalid service:Google x"
 
-	parsed := ParseQuery(q, "1")
+	parsed := cloudsearch.ParseQuery(q, "1")
 	if parsed.RawText != q {
 		t.Fatal()
 	}

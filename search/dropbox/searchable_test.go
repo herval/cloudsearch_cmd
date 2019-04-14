@@ -1,8 +1,9 @@
-package dropbox
+package dropbox_test
 
 import (
 	"context"
 	"fmt"
+	"github.com/herval/cloudsearch/search/dropbox"
 	"os"
 	"testing"
 	"time"
@@ -12,11 +13,11 @@ import (
 
 func TestDropbox(t *testing.T) {
 	if os.Getenv("DROPBOX_TOKEN") == "" {
-		t.Log("Skipping dropbox test (no token set)")
+		t.Log("Skipping d test (no token set)")
 		t.Skipped()
 	}
 
-	dropbox := NewSearch(
+	d := dropbox.NewSearch(
 		cloudsearch.AccountData{
 			ID:    "123",
 			Token: os.Getenv("DROPBOX_TOKEN"),
@@ -32,7 +33,7 @@ func TestDropbox(t *testing.T) {
 		}
 	}()
 
-	data := dropbox(cloudsearch.ParseQuery("clear_a.gif", "id"), context.Background())
+	data := d(cloudsearch.ParseQuery("clear_a.gif", "id"), context.Background())
 
 	fmt.Println(<-data)
 }

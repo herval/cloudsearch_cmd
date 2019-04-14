@@ -1,14 +1,15 @@
-package main
+package main_test
 
 import (
 	"github.com/herval/cloudsearch"
+	"github.com/herval/cloudsearch/cmd"
 	"context"
 	"fmt"
 	"testing"
 )
 
 func TestUncachedSearch(t *testing.T) {
-	conf := NewConfig(cloudsearch.Env{"localhost", ":65432", "../"}, false)
+	conf := main.NewConfig(cloudsearch.Env{"localhost", ":65432", "../"}, false)
 	search := conf.SearchEngine
 
 	t.Log("Searching...")

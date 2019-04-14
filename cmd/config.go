@@ -5,7 +5,6 @@ import (
 	"github.com/herval/cloudsearch"
 	"github.com/herval/cloudsearch/auth"
 	"github.com/herval/cloudsearch/search"
-	"github.com/herval/cloudsearch/search/authenticator"
 	"github.com/herval/cloudsearch/storage/bleve"
 	"github.com/herval/cloudsearch/storage/storm"
 	"net/http"
@@ -24,9 +23,9 @@ func NewConfig(env cloudsearch.Env, enableCaching bool) cloudsearch.Config {
 	}
 	results := bleve.NewBleveResultStorage(index)
 
-	authService := authenticator.NewAuthenticator(
+	authService := auth.NewAuthenticator(
 		authgateway.NewAuthGatewayClient(
-			authenticator.DefaultGatewayUrl,
+			auth.DefaultGatewayUrl,
 			env.HttpPort,
 			&http.Client{
 				Timeout: time.Second * 10,
