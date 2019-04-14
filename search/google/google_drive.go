@@ -74,7 +74,7 @@ func (a *GoogleDrive) SearchSnippets(query cloudsearch.Query, ctx context.Contex
 					return
 				}
 
-				out <- a.toResult(f)
+				out <- a.ToResult(f)
 			}
 		}
 	}()
