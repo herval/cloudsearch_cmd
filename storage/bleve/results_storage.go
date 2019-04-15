@@ -186,6 +186,7 @@ func (s *BleveResultStorage) Merge(r cloudsearch.Result) (cloudsearch.Result, er
 
 func (s *BleveResultStorage) Save(result cloudsearch.Result) (cloudsearch.Result, error) {
 	if result.OriginalId == "" {
+		logrus.WithField("result", result).Debug("original id is empty!")
 		return result, errors.New("original id must be set")
 	}
 
