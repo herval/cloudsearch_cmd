@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/herval/cloudsearch"
 	"github.com/jroimartin/gocui"
+	"github.com/sirupsen/logrus"
 	"github.com/skratchdot/open-golang/open"
 	"strconv"
 )
@@ -30,7 +31,7 @@ func (r *ResultList) Layout(g *gocui.Gui) error {
 		}
 		v.Frame = false
 		v.Highlight = true
-		v.Autoscroll = true
+		v.Autoscroll = false
 		v.SelBgColor = gocui.ColorGreen
 		r.v = v
 		//fmt.Fprintln(v, "Hello world!")
@@ -56,12 +57,28 @@ func (r *ResultList) Append(result cloudsearch.Result) {
 
 func (r *ResultList) Prev() {
 	x, y := r.v.Cursor()
-	r.v.SetCursor(x, max(y-1, 0))
+	err := r.v.SetCursor(x, y-1)
+
+	// scroll up
+	if err != nil {
+		_, y0 := r.v.Origin()
+		ny := max(y0-1, 0)
+		r.v.SetOrigin(x, ny)
+		//r.v.SetCursor(x, ny)
+	}
 }
 
 func (r *ResultList) Next() {
 	x, y := r.v.Cursor()
-	r.v.SetCursor(x, min(y+1, len(r.results)-1))
+	err := r.v.SetCursor(x, min(y+1, len(r.results)-1))
+
+	// scroll down
+	if err != nil {
+		_, y0 := r.v.Origin()
+		ny := min(y0+1, len(r.results)-1)
+		r.v.SetOrigin(x, ny)
+		//r.v.SetCursor(x, ny)
+	}
 }
 
 func (r *ResultList) IsSelected() bool {
@@ -69,9 +86,10 @@ func (r *ResultList) IsSelected() bool {
 }
 
 func (r *ResultList) OpenSelected() {
-	x, _ := r.v.Cursor()
+	_, y := r.v.Cursor()
 
-	open.Run(r.results[x].Permalink)
+	logrus.WithField("result", r.results[y]).Debug("Opening...")
+	open.Run(r.results[y].Permalink)
 }
 
 // ugh...
