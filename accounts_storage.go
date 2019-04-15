@@ -25,6 +25,7 @@ type AccountData struct {
 	Email        string
 	Active       bool
 	Description  string
+	Url          string
 }
 
 func (a *AccountData) String() string {
@@ -43,5 +44,6 @@ func (a *AccountData) JsonFields() map[string]interface{} {
 		"active":      a.Active,
 		"email":       a.Email,
 		"description": a.Description,
+		"url":         a.Url,
 	}
 }
