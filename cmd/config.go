@@ -36,7 +36,7 @@ func NewConfig(env cloudsearch.Env, enableCaching bool) cloudsearch.Config {
 	)
 
 	registry := cloudsearch.NewRegistry()
-	registry.RegisterAccountType(cloudsearch.Dropbox, dropbox.SearchBuilder, dropbox.AuthBuilder)
+	registry.RegisterAccountType(cloudsearch.Dropbox, search.Builder("dropbox", dropbox.NewSearch), auth.Builder(dropbox.NewAuthenticator()))
 	registry.RegisterAccountType(cloudsearch.Google, google.SearchBuilder, google.AuthBuilder(authService, accounts, auth.OauthRedirectUrlFor(env, cloudsearch.Google)))
 	registry.RegisterContentTypes(
 		cloudsearch.Document,

@@ -34,3 +34,20 @@ func NewCachedSearchableBuilder(
 		return search, ids, nil
 	}
 }
+
+// a builder for the simple case: one searchable per account
+func Builder(name string, search func(cloudsearch.AccountData) cloudsearch.SearchFunc) cloudsearch.SearchableBuilder {
+	return func(account cloudsearch.AccountData) (fetchFns []cloudsearch.SearchFunc, ids []string, err error) {
+		return []cloudsearch.SearchFunc{search(account)},
+			[]string{name},
+			nil
+	}
+}
+
+func SyncBuilder(name string, search func(cloudsearch.AccountData) cloudsearch.SyncSearchFunc) cloudsearch.SearchableBuilder {
+	return func(account cloudsearch.AccountData) (fetchFns []cloudsearch.SearchFunc, ids []string, err error) {
+		return []cloudsearch.SearchFunc{
+			cloudsearch.NewAsyncSearchable(search(account)), // woot.
+		}, []string{name}, nil
+	}
+}

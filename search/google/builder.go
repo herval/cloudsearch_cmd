@@ -2,7 +2,6 @@ package google
 
 import (
 	"github.com/herval/cloudsearch"
-	"net/http"
 )
 
 func AuthBuilder(
@@ -16,13 +15,7 @@ func AuthBuilder(
 }
 
 func SearchBuilder(account cloudsearch.AccountData) (fetchFns []cloudsearch.SearchFunc, ids []string, err error) {
-	return searchablesFor(
-		NewHttpClient(account),
-		account,
-	)
-}
-
-func searchablesFor(httpClient *http.Client, account cloudsearch.AccountData) ([]cloudsearch.SearchFunc, []string, error) {
+	httpClient := NewHttpClient(account)
 	drive, err := NewGoogleDrive(account, httpClient)
 	if err != nil {
 		return nil, nil, err
