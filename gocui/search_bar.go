@@ -118,11 +118,11 @@ func (s *SearchBar) Focus(g *gocui.Gui) error {
 
 // handle multiple searches happening as user types, cancelling stale ones, etc
 type SingleSearchHandler struct {
-	e             *cloudsearch.SearchEngine
-	v             *gocui.View
-	g             *gocui.Gui
-	r             *ResultList
-	currentSearch string
+	e                   *cloudsearch.SearchEngine
+	v                   *gocui.View
+	g                   *gocui.Gui
+	r                   *ResultList
+	currentSearchCancel context.CancelFunc
 }
 
 func (s *SingleSearchHandler) Search() error {
@@ -132,6 +132,11 @@ func (s *SingleSearchHandler) Search() error {
 
 	s.r.Clear()
 
+	if s.currentSearchCancel != nil {
+		logrus.Debug("Canceling previous query!")
+		s.currentSearchCancel()
+	}
+
 	if len(data) < 2 {
 		// no searching yet
 		logrus.Debug("Input too short, ignoring...")
@@ -139,9 +144,9 @@ func (s *SingleSearchHandler) Search() error {
 	}
 
 	ctx, cancel := context.WithCancel(context.Background())
+	s.currentSearchCancel = cancel
 
 	id := cloudsearch.NewId()
-	s.currentSearch = id
 	res := s.e.Search(
 		cloudsearch.ParseQuery(data, id),
 		ctx,
@@ -149,16 +154,20 @@ func (s *SingleSearchHandler) Search() error {
 
 	done := false
 	buff := make(chan cloudsearch.Result, 100)
+
 	go func() {
-		for r := range res {
-			if id != s.currentSearch {
-				// search changed, don't bother w/ results no more
-				cancel()
+		for !done {
+			select {
+			case r, ok := <-res:
+				buff <- r
+				if !ok {
+					done = true
+				}
+			case <-ctx.Done():
+				done = true
 				return
 			}
-			buff <- r
 		}
-		done = true
 	}()
 
 	// update UI every 200ms, while search is ongoing
