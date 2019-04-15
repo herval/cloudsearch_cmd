@@ -5,8 +5,8 @@ import "github.com/pkg/errors"
 type AccountType string
 
 const (
-	Dropbox    AccountType = "Dropbox"
-	Google     AccountType = "Google"
+	Dropbox AccountType = "Dropbox"
+	Google  AccountType = "Google"
 )
 
 var SupportedAccountTypes = []AccountType{
@@ -14,6 +14,13 @@ var SupportedAccountTypes = []AccountType{
 }
 
 var SupportedAccountTypesStr = AccountTypesStrings(SupportedAccountTypes)
+
+func RegisterAccountTypes(acc ...AccountType) {
+	for _, c := range acc {
+		SupportedAccountTypes = append(SupportedAccountTypes, c)
+		SupportedAccountTypesStr = append(SupportedAccountTypesStr, string(c))
+	}
+}
 
 func AccountTypeIncluded(list []AccountType, a AccountType) bool {
 	for _, r := range list {

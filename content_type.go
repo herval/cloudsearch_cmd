@@ -31,6 +31,13 @@ var FileTypes = []ContentType{
 	Image, Video, Folder, Document, File,
 }
 
+func RegisterContentTypes(ct ...ContentType) {
+	for _, c := range ct {
+		SupportedContentTypes = append(SupportedContentTypes, c)
+		SupportedContentTypeStr = append(SupportedContentTypeStr, string(c))
+	}
+}
+
 var SupportedContentTypeStr = ContentTypeStrings(SupportedContentTypes)
 
 func ContentTypeStrings(c []ContentType) []string {
