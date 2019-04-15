@@ -54,8 +54,8 @@ func ParseQuery(q string, searchId string, r *Registry) Query {
 	stripped := q
 	s, stripped := parseEnumItems(serviceQuery, r.SupportedAccountTypesStr(), stripped)
 	s2, stripped := parseEnumItems(serviceQuery2, r.SupportedAccountTypesStr(), stripped)
-	c, stripped := parseEnumItems(typeQuery, SupportedContentTypeStr, stripped)
-	c2, stripped := parseEnumItems(typeQuery2, SupportedContentTypeStr, stripped)
+	c, stripped := parseEnumItems(typeQuery, r.supportedContentTypesStr(), stripped)
+	c2, stripped := parseEnumItems(typeQuery2, r.supportedContentTypesStr(), stripped)
 	m, stripped := parseEnumItems(modeQuery, SupportedModesStr, stripped)
 	if len(m) == 0 {
 		m = []string{string(All)}

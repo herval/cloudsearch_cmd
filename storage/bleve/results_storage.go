@@ -296,7 +296,7 @@ func (s *BleveResultStorage) Search(q cloudsearch.Query) ([]cloudsearch.Result, 
 	logrus.Debug("Searching Cache: ", q)
 
 	subqueries := []query.Query{
-		anyOf(matchTypes(cloudsearch.ContentTypeStrings(q.ContentTypes), "ContentType")...),  // match any content type provided
+		anyOf(matchTypes(contentTypeStrings(q.ContentTypes), "ContentType")...),  // match any content type provided
 		anyOf(matchTypes(accountTypesStrings(q.AccountTypes), "AccountType")...), // match any account type provided
 		timeRange("Timestamp", q.Before, q.After),
 	}
@@ -515,6 +515,14 @@ func toResult(doc *document.Document, hitScore float64) (*cloudsearch.Result, er
 }
 
 func accountTypesStrings(c []cloudsearch.AccountType) []string {
+	var res []string
+	for _, cc := range c {
+		res = append(res, string(cc))
+	}
+	return res
+}
+
+func contentTypeStrings(c []cloudsearch.ContentType) []string {
 	var res []string
 	for _, cc := range c {
 		res = append(res, string(cc))

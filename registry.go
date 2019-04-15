@@ -11,6 +11,9 @@ type Registry struct {
 	accountTypeStrs []string
 	searchables     map[AccountType]SearchableBuilder
 	authorizers     map[AccountType]AuthBuilder
+
+	contentTypes     []ContentType
+	contentTypesStrs []string
 }
 
 func NewRegistry() *Registry {
@@ -19,6 +22,14 @@ func NewRegistry() *Registry {
 		accountTypeStrs: []string{},
 		searchables:     map[AccountType]SearchableBuilder{},
 		authorizers:     map[AccountType]AuthBuilder{},
+		contentTypes:    []ContentType{},
+	}
+}
+
+func (r *Registry) RegisterContentTypes(ct ...ContentType) {
+	for _, c := range ct {
+		r.contentTypes = append(r.contentTypes, c)
+		r.contentTypesStrs = append(r.contentTypesStrs, string(c))
 	}
 }
 
@@ -68,6 +79,11 @@ func (r *Registry) ParseAccountType(str string) (AccountType, error) {
 	}
 	return "", errors.New("Unsupported type: " + str)
 }
+
 func (r *Registry) SupportedAccountTypesStr() []string {
 	return r.accountTypeStrs
+}
+
+func (r *Registry) supportedContentTypesStr() []string {
+	return r.contentTypesStrs
 }

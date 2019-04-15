@@ -22,30 +22,8 @@ const (
 	Video       ContentType = "Video"
 )
 
-var SupportedContentTypes = []ContentType{
-	Application, Calendar, Contact, Document, Email,
-	Event, File, Folder, Image, Message, Post, Task, Video,
-}
-
 var FileTypes = []ContentType{
 	Image, Video, Folder, Document, File,
-}
-
-func RegisterContentTypes(ct ...ContentType) {
-	for _, c := range ct {
-		SupportedContentTypes = append(SupportedContentTypes, c)
-		SupportedContentTypeStr = append(SupportedContentTypeStr, string(c))
-	}
-}
-
-var SupportedContentTypeStr = ContentTypeStrings(SupportedContentTypes)
-
-func ContentTypeStrings(c []ContentType) []string {
-	var res []string
-	for _, cc := range c {
-		res = append(res, string(cc))
-	}
-	return res
 }
 
 var ImageTypes = []string{
