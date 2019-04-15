@@ -122,14 +122,14 @@ func (s *SearchEngine) Search(query Query, ctx context.Context) <-chan Result {
 					break
 				}
 
-				c := filterOut(query, d)
+				c = filterOut(query, d)
 				if c == nil {
 					skip = true
 					break
 				}
 			}
 
-			if !skip && ctx.Err() != nil {
+			if !skip && ctx.Err() == nil {
 				results <- *c
 			}
 		}
