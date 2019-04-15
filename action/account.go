@@ -12,16 +12,16 @@ func ConfigureNewAccount(
 	accType string,
 	env cloudsearch.Env,
 	storage cloudsearch.AccountsStorage,
-	authBuilder cloudsearch.AuthBuilder,
+	registry *cloudsearch.Registry,
 	authenticator cloudsearch.OAuth2Authenticator,
 ) {
 	acc := cloudsearch.AccountType(accType)
-	if !cloudsearch.AccountTypeIncluded(cloudsearch.SupportedAccountTypes, acc) {
-		fmt.Println("Please provide a valid account type (Dropbox | Google).\nExample usage:\n> cloudsearch login Google")
+	if !registry.IsAccountTypeSupported(acc) {
+		fmt.Println("Please provide a valid account type.\nExample usage:\n> cloudsearch login Google")
 		os.Exit(1)
 	}
 
-	done := StartOauthServer(env, storage, authBuilder, authenticator)
+	done := StartOauthServer(env, storage, registry, authenticator)
 
 	url := fmt.Sprintf("%s%s/oauth/start/%s", env.ServerBase, env.HttpPort, accType)
 	fmt.Println("To start the login flow for your account, go to this link:\n\n    " + url + "\n")
@@ -34,7 +34,6 @@ func ConfigureNewAccount(
 
 	fmt.Println("\nAuthentication done!")
 }
-
 
 func ListOrRemove(storage cloudsearch.AccountsStorage, op string, accountId string, format string) {
 	switch op {
@@ -80,7 +79,7 @@ func ListOrRemove(storage cloudsearch.AccountsStorage, op string, accountId stri
 func StartOauthServer(
 	env cloudsearch.Env,
 	accounts cloudsearch.AccountsStorage,
-	ab cloudsearch.AuthBuilder,
+	reg *cloudsearch.Registry,
 	authService cloudsearch.OAuth2Authenticator,
 ) (<-chan error) {
 	done := make(chan error)
@@ -88,7 +87,7 @@ func StartOauthServer(
 	a := &auth.Api{
 		env,
 		accounts,
-		ab,
+		reg,
 		authService,
 	}
 	go func() {
@@ -100,5 +99,3 @@ func StartOauthServer(
 
 	return done
 }
-
-

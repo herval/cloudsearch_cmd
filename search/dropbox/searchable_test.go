@@ -33,7 +33,7 @@ func TestDropbox(t *testing.T) {
 		}
 	}()
 
-	data := d(cloudsearch.ParseQuery("clear_a.gif", "id"), context.Background())
+	data := d(cloudsearch.ParseQuery("clear_a.gif", "id", cloudsearch.NewRegistry()), context.Background())
 
 	fmt.Println(<-data)
 }

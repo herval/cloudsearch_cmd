@@ -13,8 +13,7 @@ func NewMultiSearch(
 	env Env,
 	accounts AccountsStorage,
 	results ResultsStorage,
-	searchables SearchableBuilder,
-	authBuilder AuthBuilder,
+	registry *Registry,
 	filterBuilder func(q Query) []ResultFilter,
 ) SearchEngine {
 	a := SearchEngine{
@@ -22,8 +21,7 @@ func NewMultiSearch(
 		accounts:           accounts,
 		currentSearchables: []SearchFunc{},
 		filterBuilder:      filterBuilder,
-		searchables:        searchables,
-		authBuilder:        authBuilder,
+		registry:           registry,
 		results:            results,
 	}
 
@@ -43,8 +41,7 @@ type SearchEngine struct {
 	accounts           AccountsStorage
 	results            ResultsStorage
 	filterBuilder      func(q Query) []ResultFilter
-	searchables        SearchableBuilder
-	authBuilder        AuthBuilder
+	registry           *Registry
 
 	// allow building composable searchables (eg support caching and filtering). One account can have multiple searchables.
 }
@@ -63,7 +60,7 @@ func (s *SearchEngine) Refresh() error {
 
 	for _, acc := range a {
 		if acc.ShouldReauth() {
-			auth, err := s.authBuilder(acc.AccountType)
+			auth, err := s.registry.AuthBuilder(acc.AccountType)
 			if err != nil {
 				return errors.Wrap(err, "Could not build authenticator")
 			}
@@ -77,7 +74,7 @@ func (s *SearchEngine) Refresh() error {
 			// TODO mark failed as inactive?
 		}
 
-		searchables, _, err := s.searchables(acc)
+		searchables, _, err := s.registry.SearchBuilder(acc)
 		if err != nil {
 			return err
 		}
@@ -206,7 +203,7 @@ func (s *SearchEngine) WatchTokens() {
 			if a.RefreshToken != "" {
 				// TODO if auth can't be established fast, fail
 
-				auth, err := s.authBuilder(a.AccountType)
+				auth, err := s.registry.AuthBuilder(a.AccountType)
 				if err != nil {
 					logrus.Error("Auth building", err)
 					continue

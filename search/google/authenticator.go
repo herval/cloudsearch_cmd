@@ -9,6 +9,7 @@ import (
 	"net/http"
 )
 
+
 func NewAuthenticator(
 	authService cloudsearch.OAuth2Authenticator,
 	accounts cloudsearch.AccountsStorage,

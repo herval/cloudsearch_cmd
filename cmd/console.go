@@ -39,10 +39,16 @@ func main() {
 		action.ListOrRemove(config.AccountsStorage, op, acc, *format)
 	case "login":
 		accType := flag.Arg(1)
-		action.ConfigureNewAccount(accType, config.Env, config.AccountsStorage, config.AuthBuilder, config.AuthService)
+		action.ConfigureNewAccount(
+			accType,
+			config.Env,
+			config.AccountsStorage,
+			config.Registry,
+			config.AuthService,
+		)
 	case "search":
 		searchString := strings.Join(flag.Args()[1:], " ")
-		action.SearchAll(searchString, config.SearchEngine, config.Env)
+		action.SearchAll(searchString, config.SearchEngine, config.Registry)
 	default:
 		if len(flag.Args()) == 0 {
 			err := action.InteractiveMode(config.SearchEngine)

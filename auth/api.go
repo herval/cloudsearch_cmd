@@ -11,7 +11,7 @@ import (
 type Api struct {
 	Env          cloudsearch.Env
 	Accounts     cloudsearch.AccountsStorage
-	Auth         cloudsearch.AuthBuilder
+	Registry     *cloudsearch.Registry
 	OauthService cloudsearch.OAuth2Authenticator
 }
 
@@ -28,7 +28,7 @@ func (a *Api) Start(port string, done chan error) error {
 }
 
 func (a *Api) oauthStart(ctx *gin.Context) {
-	service, err := cloudsearch.ParseAccountType(ctx.Param("service"))
+	service, err := a.Registry.ParseAccountType(ctx.Param("service"))
 	if err != nil {
 		renderError(ctx, err)
 		return
@@ -50,11 +50,11 @@ func (a *Api) oauthCallback(done chan error) func(ctx *gin.Context) {
 			done <- err
 		}()
 
-		service, err := cloudsearch.ParseAccountType(ctx.Param("service"))
+		service, err := a.Registry.ParseAccountType(ctx.Param("service"))
 		code := ctx.Query("code")
 		logrus.Debug("Oauth callback for ", service, " - ", code)
 
-		auth, err := a.Auth(service)
+		auth, err := a.Registry.AuthBuilder(service)
 		if err != nil {
 			renderError(ctx, err)
 			return

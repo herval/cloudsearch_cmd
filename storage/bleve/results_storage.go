@@ -297,7 +297,7 @@ func (s *BleveResultStorage) Search(q cloudsearch.Query) ([]cloudsearch.Result, 
 
 	subqueries := []query.Query{
 		anyOf(matchTypes(cloudsearch.ContentTypeStrings(q.ContentTypes), "ContentType")...),  // match any content type provided
-		anyOf(matchTypes(cloudsearch.AccountTypesStrings(q.AccountTypes), "AccountType")...), // match any account type provided
+		anyOf(matchTypes(accountTypesStrings(q.AccountTypes), "AccountType")...), // match any account type provided
 		timeRange("Timestamp", q.Before, q.After),
 	}
 
@@ -512,4 +512,12 @@ func toResult(doc *document.Document, hitScore float64) (*cloudsearch.Result, er
 	res.CacheHitScore = hitScore
 
 	return &res, nil
+}
+
+func accountTypesStrings(c []cloudsearch.AccountType) []string {
+	var res []string
+	for _, cc := range c {
+		res = append(res, string(cc))
+	}
+	return res
 }

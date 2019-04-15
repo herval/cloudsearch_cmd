@@ -1,10 +1,10 @@
 package integration_test
 
 import (
-	"github.com/herval/cloudsearch"
-	"github.com/herval/cloudsearch/cmd"
 	"context"
 	"fmt"
+	"github.com/herval/cloudsearch"
+	"github.com/herval/cloudsearch/cmd"
 	"testing"
 )
 
@@ -14,7 +14,7 @@ func TestUncachedSearch(t *testing.T) {
 
 	t.Log("Searching...")
 
-	q := cloudsearch.ParseQuery("foo", "123")
+	q := cloudsearch.ParseQuery("foo", "123", cloudsearch.NewRegistry())
 	res := search.Search(
 		q,
 		context.TODO(),

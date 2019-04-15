@@ -50,10 +50,10 @@ var modeQuery = regexp.MustCompile(`\b(mode):([\w]+)`)
 var typeQuery = regexp.MustCompile(`\b(type):([\w]+)`)
 var typeQuery2 = regexp.MustCompile(`\b@\[(type):([\w]+)\]`)
 
-func ParseQuery(q string, searchId string) Query {
+func ParseQuery(q string, searchId string, r *Registry) Query {
 	stripped := q
-	s, stripped := parseEnumItems(serviceQuery, SupportedAccountTypesStr, stripped)
-	s2, stripped := parseEnumItems(serviceQuery2, SupportedAccountTypesStr, stripped)
+	s, stripped := parseEnumItems(serviceQuery, r.SupportedAccountTypesStr(), stripped)
+	s2, stripped := parseEnumItems(serviceQuery2, r.SupportedAccountTypesStr(), stripped)
 	c, stripped := parseEnumItems(typeQuery, SupportedContentTypeStr, stripped)
 	c2, stripped := parseEnumItems(typeQuery2, SupportedContentTypeStr, stripped)
 	m, stripped := parseEnumItems(modeQuery, SupportedModesStr, stripped)
@@ -78,7 +78,7 @@ func ParseQuery(q string, searchId string) Query {
 }
 
 func CanHandle(query Query, accountType AccountType, contentTypes []ContentType) bool {
-	return (len(query.AccountTypes) == 0 || AccountTypeIncluded(query.AccountTypes, accountType)) &&
+	return (len(query.AccountTypes) == 0 || accountTypeIncluded(query.AccountTypes, accountType)) &&
 		(len(query.ContentTypes) == 0 || ContainsAnyType(query.ContentTypes, contentTypes))
 }
 
@@ -129,4 +129,13 @@ func parseTime(regex *regexp.Regexp, q string) (*time.Time, string) {
 		}
 	}
 	return nil, q
+}
+
+func accountTypeIncluded(list []AccountType, a AccountType) bool {
+	for _, r := range list {
+		if r == a {
+			return true
+		}
+	}
+	return false
 }

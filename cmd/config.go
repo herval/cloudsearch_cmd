@@ -5,6 +5,8 @@ import (
 	"github.com/herval/cloudsearch"
 	"github.com/herval/cloudsearch/auth"
 	"github.com/herval/cloudsearch/search"
+	"github.com/herval/cloudsearch/search/dropbox"
+	"github.com/herval/cloudsearch/search/google"
 	"github.com/herval/cloudsearch/storage/bleve"
 	"github.com/herval/cloudsearch/storage/storm"
 	"net/http"
@@ -33,13 +35,11 @@ func NewConfig(env cloudsearch.Env, enableCaching bool) cloudsearch.Config {
 		),
 	)
 
-	a := auth.NewAuthBuilder(
-		authService,
-		accounts,
-		auth.OauthRedirectUrlFor(env, cloudsearch.Google),
-	)
+	registry := cloudsearch.NewRegistry()
+	registry.RegisterAccountType(cloudsearch.Dropbox, dropbox.SearchBuilder, dropbox.AuthBuilder)
+	registry.RegisterAccountType(cloudsearch.Google, google.SearchBuilder, google.AuthBuilder(authService, accounts, auth.OauthRedirectUrlFor(env, cloudsearch.Google)))
 
-	searchBuilder := search.NewRemoteSearchablesBuilder(a)
+	searchBuilder := registry.SearchBuilder
 	if enableCaching {
 		searchBuilder = search.NewCachedSearchableBuilder(results, searchBuilder, enableCaching)
 	}
@@ -48,8 +48,7 @@ func NewConfig(env cloudsearch.Env, enableCaching bool) cloudsearch.Config {
 		env,
 		accounts,
 		results,
-		searchBuilder,
-		a,
+		registry,
 		func(q cloudsearch.Query) []cloudsearch.ResultFilter {
 			return []cloudsearch.ResultFilter{
 				cloudsearch.FilterNotInRange,
@@ -65,7 +64,7 @@ func NewConfig(env cloudsearch.Env, enableCaching bool) cloudsearch.Config {
 		Env:             env,
 		AccountsStorage: accounts,
 		SearchEngine:    &multiSearch,
-		AuthBuilder:     a,
+		Registry:        registry,
 		ResultsStorage:  results,
 		AuthService:     authService,
 	}

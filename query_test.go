@@ -9,8 +9,11 @@ import (
 
 func TestParser(t *testing.T) {
 	q := "type:File foo bar service:dropbox before:2017-01-1 service:invalid service:Google x"
+	reg := cloudsearch.NewRegistry()
+	reg.RegisterAccountType(cloudsearch.Dropbox, nil, nil)
+	reg.RegisterAccountType(cloudsearch.Google, nil, nil)
 
-	parsed := cloudsearch.ParseQuery(q, "1")
+	parsed := cloudsearch.ParseQuery(q, "1", reg)
 	if parsed.RawText != q {
 		t.Fatal()
 	}

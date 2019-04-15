@@ -1,12 +1,8 @@
 package search
 
 import (
-	"fmt"
 	"github.com/herval/cloudsearch"
 	"github.com/herval/cloudsearch/search/bleve"
-	"github.com/herval/cloudsearch/search/dropbox"
-	"github.com/herval/cloudsearch/search/google"
-	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 )
 
@@ -36,27 +32,5 @@ func NewCachedSearchableBuilder(
 		}
 
 		return search, ids, nil
-	}
-}
-
-func NewRemoteSearchablesBuilder(
-	authBuilder cloudsearch.AuthBuilder,
-) cloudsearch.SearchableBuilder {
-	return func(account cloudsearch.AccountData) ([]cloudsearch.SearchFunc, []string, error) {
-		switch account.AccountType {
-		case cloudsearch.Dropbox:
-			return []cloudsearch.SearchFunc{dropbox.NewSearch(account)},
-				[]string{"dropbox"},
-				nil
-
-		case cloudsearch.Google:
-			return google.SearchablesFor(
-				google.NewHttpClient(account),
-				account,
-			)
-
-		default:
-			return nil, nil, errors.New(fmt.Sprintf("Cannot search for type: %s", string(account.AccountType)))
-		}
 	}
 }

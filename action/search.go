@@ -8,8 +8,8 @@ import (
 	"os"
 )
 
-func SearchAll(cmd string, search *cloudsearch.SearchEngine, config cloudsearch.Env) {
-	query := cloudsearch.ParseQuery(cmd, cloudsearch.NewId())
+func SearchAll(cmd string, search *cloudsearch.SearchEngine, r *cloudsearch.Registry) {
+	query := cloudsearch.ParseQuery(cmd, cloudsearch.NewId(), r)
 	res := search.Search(query, context.Background())
 
 	for {

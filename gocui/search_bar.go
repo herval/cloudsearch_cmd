@@ -122,6 +122,7 @@ type SingleSearchHandler struct {
 	v                   *gocui.View
 	g                   *gocui.Gui
 	r                   *ResultList
+	re                  *cloudsearch.Registry
 	currentSearchCancel context.CancelFunc
 }
 
@@ -148,7 +149,7 @@ func (s *SingleSearchHandler) Search() error {
 
 	id := cloudsearch.NewId()
 	res := s.e.Search(
-		cloudsearch.ParseQuery(data, id),
+		cloudsearch.ParseQuery(data, id, s.re),
 		ctx,
 	)
 
