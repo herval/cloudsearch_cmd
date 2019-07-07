@@ -21,7 +21,7 @@ func TestUncachedSearch(t *testing.T) {
 	)
 
 	for r := range res {
-		r.SetId() // not saved on db, so ID will be blank
+		r.SetId()
 		t.Log(fmt.Sprintf("%+v", r))
 	}
 }

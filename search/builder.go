@@ -43,11 +43,3 @@ func Builder(name string, search func(cloudsearch.AccountData) cloudsearch.Searc
 			nil
 	}
 }
-
-func SyncBuilder(name string, search func(cloudsearch.AccountData) cloudsearch.SyncSearchFunc) cloudsearch.SearchableBuilder {
-	return func(account cloudsearch.AccountData) (fetchFns []cloudsearch.SearchFunc, ids []string, err error) {
-		return []cloudsearch.SearchFunc{
-			cloudsearch.NewAsyncSearchable(search(account)), // woot.
-		}, []string{name}, nil
-	}
-}
