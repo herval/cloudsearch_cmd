@@ -65,6 +65,14 @@ func FilterContent(query Query, in Result) *Result {
 	}
 }
 
+
+func SetId(query Query, in Result) *Result {
+	if in.Id == "" {
+		in.SetId()
+	}
+	return &in
+}
+
 func typesInclude(types []ContentType, t ContentType) bool {
 	for _, tt := range types {
 		if t == tt {

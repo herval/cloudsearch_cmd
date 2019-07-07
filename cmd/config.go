@@ -66,6 +66,7 @@ func NewConfig(env cloudsearch.Env, enableCaching bool) cloudsearch.Config {
 		registry,
 		func(q cloudsearch.Query) []cloudsearch.ResultFilter {
 			return []cloudsearch.ResultFilter{
+				cloudsearch.SetId, // no better place to set this ugh
 				cloudsearch.FilterNotInRange,
 				cloudsearch.Dedup(q),
 				cloudsearch.FilterContent,

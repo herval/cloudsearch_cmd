@@ -111,6 +111,9 @@ func (s *SearchEngine) Search(query Query, ctx context.Context) <-chan Result {
 
 			c := &d
 			skip := false
+			if c.Id == "" {
+				c.SetId()
+			}
 
 			// apply filters
 			for _, filterOut := range filters {
