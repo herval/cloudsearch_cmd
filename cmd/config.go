@@ -1,7 +1,10 @@
 package main
 
 import (
-	"github.com/herval/authgateway/client"
+	"net/http"
+	"time"
+
+	authgateway "github.com/herval/authgateway/client"
 	"github.com/herval/cloudsearch"
 	"github.com/herval/cloudsearch/auth"
 	"github.com/herval/cloudsearch/search"
@@ -9,8 +12,6 @@ import (
 	"github.com/herval/cloudsearch/search/google"
 	"github.com/herval/cloudsearch/storage/bleve"
 	"github.com/herval/cloudsearch/storage/storm"
-	"net/http"
-	"time"
 )
 
 func NewConfig(env cloudsearch.Env, enableCaching bool) cloudsearch.Config {
@@ -35,14 +36,21 @@ func NewConfig(env cloudsearch.Env, enableCaching bool) cloudsearch.Config {
 		),
 	)
 
+	withCaching := func(s cloudsearch.SearchableBuilder) cloudsearch.SearchableBuilder {
+		if enableCaching {
+			return search.NewCachedSearchableBuilder(results, s)
+		}
+		return s
+	}
+
 	registry := cloudsearch.NewRegistry()
 	registry.RegisterAccountType(cloudsearch.Dropbox,
-		search.Builder("dropbox", dropbox.NewSearch),
+		withCaching(search.Builder("dropbox", dropbox.NewSearch)),
 		auth.Builder(dropbox.NewAuthenticator()),
 	)
 	registry.RegisterAccountType(
 		cloudsearch.Google,
-		google.SearchBuilder,
+		withCaching(google.SearchBuilder),
 		google.AuthBuilder(authService, accounts, auth.OauthRedirectUrlFor(env, cloudsearch.Google)),
 	)
 	registry.RegisterContentTypes(
@@ -53,11 +61,6 @@ func NewConfig(env cloudsearch.Env, enableCaching bool) cloudsearch.Config {
 		cloudsearch.Image,
 		cloudsearch.Video,
 	)
-
-	searchBuilder := registry.SearchBuilder
-	if enableCaching {
-		searchBuilder = search.NewCachedSearchableBuilder(results, searchBuilder, enableCaching)
-	}
 
 	multiSearch := cloudsearch.NewMultiSearch(
 		env,

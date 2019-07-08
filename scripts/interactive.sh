@@ -1,4 +1,4 @@
 #!/bin/sh
 
-./cloudsearch -log
+./cloudsearch -log -debug
 

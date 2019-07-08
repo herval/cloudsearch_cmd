@@ -9,7 +9,6 @@ import (
 func NewCachedSearchableBuilder(
 	results cloudsearch.ResultsStorage,
 	remotes cloudsearch.SearchableBuilder,
-	cacheLocally bool,
 ) cloudsearch.SearchableBuilder {
 	return func(a cloudsearch.AccountData) ([]cloudsearch.SearchFunc, []string, error) {
 		search, ids, err := remotes(a)
@@ -20,16 +19,14 @@ func NewCachedSearchableBuilder(
 			}
 		}
 
-		if cacheLocally {
-			// support cached results
-			cached := []cloudsearch.SearchFunc{}
-			for i, c := range search {
-				cs := bleve.NewIndexedResultsSearchable(results)
-				ca := cloudsearch.NewCachedSearchable(ids[i], results, cs, c, a.AccountType)
-				cached = append(cached, ca)
-			}
-			search = cached
+		// support cached results
+		cached := []cloudsearch.SearchFunc{}
+		for i, c := range search {
+			cs := bleve.NewIndexedResultsSearchable(results)
+			ca := cloudsearch.NewCachedSearchable(ids[i], results, cs, c, a.AccountType)
+			cached = append(cached, ca)
 		}
+		search = cached
 
 		return search, ids, nil
 	}

@@ -9,7 +9,7 @@ import (
 type ResultFilter func(Query, Result) *Result
 
 func Dedup(query Query) func(query Query, in Result) *Result {
-	logrus.Debug("Filtering dups for ", query)
+	logrus.Debug("Setting up dedup for ", query)
 	lock := sync.RWMutex{}
 	alreadyPosted := map[string]bool{}
 
