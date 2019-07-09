@@ -40,3 +40,11 @@ func Builder(name string, search func(cloudsearch.AccountData) cloudsearch.Searc
 			nil
 	}
 }
+
+
+func WithCaching(s cloudsearch.SearchableBuilder, enableCaching bool, results cloudsearch.ResultsStorage) cloudsearch.SearchableBuilder {
+	if enableCaching {
+		return NewCachedSearchableBuilder(results, s)
+	}
+	return s
+}

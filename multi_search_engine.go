@@ -2,11 +2,12 @@ package cloudsearch
 
 import (
 	"context"
-	"github.com/pkg/errors"
-	"github.com/sirupsen/logrus"
 	"sync"
 	"sync/atomic"
 	"time"
+
+	"github.com/pkg/errors"
+	"github.com/sirupsen/logrus"
 )
 
 func NewMultiSearch(
@@ -20,7 +21,7 @@ func NewMultiSearch(
 		env:                env,
 		accounts:           accounts,
 		currentSearchables: []SearchFunc{},
-		filterBuilder:      filterBuilder,
+		FilterBuilder:      filterBuilder,
 		registry:           registry,
 		results:            results,
 	}
@@ -40,7 +41,7 @@ type SearchEngine struct {
 	currentSearchables []SearchFunc
 	accounts           AccountsStorage
 	results            ResultsStorage
-	filterBuilder      func(q Query) []ResultFilter
+	FilterBuilder      func(q Query) []ResultFilter
 	registry           *Registry
 
 	// allow building composable searchables (eg support caching and filtering). One account can have multiple searchables.
@@ -89,7 +90,7 @@ func (s *SearchEngine) Search(query Query, ctx context.Context) <-chan Result {
 
 	m := NewStopwatch("multisearch_" + query.SearchId)
 	searchables := s.currentSearchables
-	filters := s.filterBuilder(query)
+	filters := s.FilterBuilder(query)
 
 	results := make(chan Result)
 

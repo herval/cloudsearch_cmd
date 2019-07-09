@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/herval/cloudsearch"
 	"github.com/herval/cloudsearch/action"
+	"github.com/herval/cloudsearch/config"
 	"os"
 	"strings"
 )
@@ -29,29 +30,33 @@ func main() {
 		HttpPort:    *oauthPort,
 	}
 
-	config := NewConfig(env, true)
+	c, err := config.NewConfig(env, true)
+	if err != nil {
+		fmt.Println(err.Error())
+		os.Exit(1)
+	}
 
 	mode := flag.Arg(0)
 	switch mode {
 	case "accounts":
 		op := flag.Arg(1)
 		acc := flag.Arg(2)
-		action.ListOrRemove(config.AccountsStorage, op, acc, *format)
+		action.ListOrRemove(c.AccountsStorage, op, acc, *format)
 	case "login":
 		accType := flag.Arg(1)
 		action.ConfigureNewAccount(
 			accType,
-			config.Env,
-			config.AccountsStorage,
-			config.Registry,
-			config.AuthService,
+			c.Env,
+			c.AccountsStorage,
+			c.Registry,
+			c.AuthService,
 		)
 	case "search":
 		searchString := strings.Join(flag.Args()[1:], " ")
-		action.SearchAll(searchString, config.SearchEngine, config.Registry)
+		action.SearchAll(searchString, c.SearchEngine, c.Registry)
 	default:
 		if len(flag.Args()) == 0 {
-			err := action.InteractiveMode(config.SearchEngine)
+			err := action.InteractiveMode(c.SearchEngine)
 			if err != nil {
 				fmt.Println(err.Error())
 				os.Exit(1)

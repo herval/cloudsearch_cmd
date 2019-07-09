@@ -1,4 +1,4 @@
-package main
+package config
 
 import (
 	"net/http"
@@ -14,15 +14,15 @@ import (
 	"github.com/herval/cloudsearch/storage/storm"
 )
 
-func NewConfig(env cloudsearch.Env, enableCaching bool) cloudsearch.Config {
+func NewConfig(env cloudsearch.Env, enableCaching bool) (cloudsearch.Config, error) {
 	accounts, err := storm.NewAccountsStorage(env.StoragePath)
 	if err != nil {
-		panic(err)
+		return cloudsearch.Config{}, err
 	}
 
 	index, err := bleve.NewIndex(env.StoragePath, "")
 	if err != nil {
-		panic(err)
+		return cloudsearch.Config{}, err
 	}
 	results := bleve.NewBleveResultStorage(index)
 
@@ -36,21 +36,14 @@ func NewConfig(env cloudsearch.Env, enableCaching bool) cloudsearch.Config {
 		),
 	)
 
-	withCaching := func(s cloudsearch.SearchableBuilder) cloudsearch.SearchableBuilder {
-		if enableCaching {
-			return search.NewCachedSearchableBuilder(results, s)
-		}
-		return s
-	}
-
 	registry := cloudsearch.NewRegistry()
 	registry.RegisterAccountType(cloudsearch.Dropbox,
-		withCaching(search.Builder("dropbox", dropbox.NewSearch)),
+		search.WithCaching(search.Builder("dropbox", dropbox.NewSearch), enableCaching, results),
 		auth.Builder(dropbox.NewAuthenticator()),
 	)
 	registry.RegisterAccountType(
 		cloudsearch.Google,
-		withCaching(google.SearchBuilder),
+		search.WithCaching(google.SearchBuilder, enableCaching, results),
 		google.AuthBuilder(authService, accounts, auth.OauthRedirectUrlFor(env, cloudsearch.Google)),
 	)
 	registry.RegisterContentTypes(
@@ -77,6 +70,7 @@ func NewConfig(env cloudsearch.Env, enableCaching bool) cloudsearch.Config {
 		},
 	)
 
+	// TODO move this side effect somewhere else
 	go multiSearch.WatchTokens()
 
 	return cloudsearch.Config{
@@ -86,5 +80,5 @@ func NewConfig(env cloudsearch.Env, enableCaching bool) cloudsearch.Config {
 		Registry:        registry,
 		ResultsStorage:  results,
 		AuthService:     authService,
-	}
+	}, nil
 }
