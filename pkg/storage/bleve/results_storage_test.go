@@ -3,6 +3,7 @@ package bleve_test
 import (
 	"github.com/herval/cloudsearch/pkg"
 	"github.com/herval/cloudsearch/pkg/storage/bleve"
+	"github.com/herval/cloudsearch/pkg/test"
 	"testing"
 )
 
@@ -78,12 +79,12 @@ func TestContentTypeQuery(t *testing.T) {
 		s, t,
 	)
 
-	q := cloudsearch.ParseQuery("type:image", "", cloudsearch.NewRegistry())
+	q := cloudsearch.ParseQuery("type:image", "", test.DefaultRegistry())
 	if res, err := s.Search(q); err != nil || len(res) != 1 {
 		t.Fatal("should find the image content only: ", res)
 	}
 
-	q = cloudsearch.ParseQuery("type:file", "", cloudsearch.NewRegistry())
+	q = cloudsearch.ParseQuery("type:file", "", test.DefaultRegistry())
 	if res, err := s.Search(q); err != nil || len(res) != 0 {
 		t.Fatal("should find no content!")
 	}

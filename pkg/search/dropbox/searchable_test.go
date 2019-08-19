@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/herval/cloudsearch/pkg/search/dropbox"
+	"github.com/herval/cloudsearch/pkg/test"
 	"os"
 	"testing"
 	"time"
@@ -33,7 +34,7 @@ func TestDropbox(t *testing.T) {
 		}
 	}()
 
-	data := d(cloudsearch.ParseQuery("clear_a.gif", "id", cloudsearch.NewRegistry()), context.Background())
+	data := d(cloudsearch.ParseQuery("clear_a.gif", "id", test.DefaultRegistry()), context.Background())
 
 	fmt.Println(<-data)
 }

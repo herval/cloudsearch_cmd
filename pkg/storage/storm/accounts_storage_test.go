@@ -9,11 +9,11 @@ import (
 
 func TestStorage(t *testing.T) {
 	env := cloudsearch.Env{
-		StoragePath: "./../tmp",
+		StoragePath: "./../../../tmp",
 	}
 	storage, err := storm.NewAccountsStorage(env.StoragePath)
 	if err != nil {
-		t.Fail()
+		t.Fatal(err)
 	}
 
 	// cleanup

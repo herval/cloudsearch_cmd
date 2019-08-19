@@ -5,7 +5,8 @@ import (
 	"fmt"
 	"github.com/herval/cloudsearch/pkg"
 	"github.com/herval/cloudsearch/pkg/config"
-	"testing"
+    "github.com/herval/cloudsearch/pkg/test"
+    "testing"
 )
 
 func TestUncachedSearch(t *testing.T) {
@@ -17,7 +18,7 @@ func TestUncachedSearch(t *testing.T) {
 
 	t.Log("Searching...")
 
-	q := cloudsearch.ParseQuery("foo", "123", cloudsearch.NewRegistry())
+	q := cloudsearch.ParseQuery("foo", "123", test.DefaultRegistry())
 	res := search.Search(
 		q,
 		context.TODO(),

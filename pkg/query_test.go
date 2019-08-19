@@ -2,6 +2,7 @@ package cloudsearch_test
 
 import (
 	"github.com/herval/cloudsearch/pkg"
+	"github.com/herval/cloudsearch/pkg/test"
 	"reflect"
 	"testing"
 	"time"
@@ -9,7 +10,7 @@ import (
 
 func TestParser(t *testing.T) {
 	q := "type:File foo bar service:dropbox before:2017-01-1 service:invalid service:Google x"
-	reg := cloudsearch.NewRegistry()
+	reg := test.DefaultRegistry()
 	reg.RegisterAccountType(cloudsearch.Dropbox, nil, nil)
 	reg.RegisterAccountType(cloudsearch.Google, nil, nil)
 
