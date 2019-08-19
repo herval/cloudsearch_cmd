@@ -1,7 +1,7 @@
 package storm_test
 
 import (
-	"github.com/herval/cloudsearch/pkg/storagerage/storm"
+	"github.com/herval/cloudsearch/pkg/storage/storm"
 	"testing"
 
 	"github.com/herval/cloudsearch/pkg"
