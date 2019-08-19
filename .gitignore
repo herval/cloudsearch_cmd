@@ -6,4 +6,4 @@ cloudsearch
 index.bleve/
 rice-box.go
 cloudsearch.log
-search/bleve/index*
+pkg/search/bleve/index*
