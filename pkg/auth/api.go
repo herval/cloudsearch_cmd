@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/herval/cloudsearch/pkg"
-	"github.com/herval/cloudsearch/assets"
+	"github.com/herval/cloudsearch/pkg/assets"
 	"github.com/sirupsen/logrus"
 )
 
